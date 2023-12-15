@@ -1,0 +1,8 @@
+{
+  "name": "graphql-test",
+  "version": "1.0.0",
+  "main": "build/src/api/index.js",
+  "repository": "https://github.com/canofm/graphql-test.git",
+  "author": "Federico Cano <canofedericomartin@gmail.com>",
+  "license": "MIT"
+}
