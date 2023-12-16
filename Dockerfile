@@ -13,6 +13,8 @@ RUN mkdir -p /app
 # Set working directory to App dir
 WORKDIR /app
 
+COPY .env .
+
 COPY ./package.json .
 
 RUN npm cache clean --force
@@ -21,6 +23,6 @@ RUN npm install
 # Copy project files
 COPY . .
 
-EXPOSE 3000
+EXPOSE 8000
 
 CMD [ "yarn", "start" ]
