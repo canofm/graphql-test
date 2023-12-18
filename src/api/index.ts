@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { Client } from 'pg';
+import knex from 'knex';
 import 'dotenv/config';
 
 const {
@@ -7,7 +7,7 @@ const {
   POSTGRES_DB: dbName,
   POSTGRES_USER: dbUser,
   POSTGRES_PASSWORD: dbPassword,
-  POSTGRES_HOST: dbHost,
+  DB_HOST: dbHost,
 } = process.env;
 
 const app = express();
@@ -17,19 +17,18 @@ app.get('/', (_req: Request, res: Response) => {
   res.send('Hello world!');
 });
 
-const client = new Client({
-  user: dbUser,
-  host: dbHost,
-  database: dbName,
-  password: dbPassword,
-  port: 5432,
+const x = knex({
+  client: 'pg',
+  connection: {
+    host: dbHost,
+    port: 5432,
+    user: dbUser,
+    password: dbPassword,
+    database: dbName,
+  },
 });
 
-client.connect();
-client.query('SELECT NOW()', (err, res) => {
-  console.log('Error or response: ', err, res);
-  client.end();
-});
+x.raw('select now()').then(({ rows }) => console.log({ rows }));
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
