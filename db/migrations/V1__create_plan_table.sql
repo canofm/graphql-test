@@ -14,5 +14,11 @@ CREATE TABLE plans(
   "storage_unit" storage_unit_enum,
   "support_level" support_level_enum NOT NULL,
   "customizations" JSONB NOT NULL DEFAULT '{}',
-  "annual_discount" DECIMAL
-)
+  "annual_discount" DECIMAL,
+  "created_at" DATE NOT NULL DEFAULT NOW(),
+  "updated_at" DATE NOT NULL DEFAULT NOW(),
+  "deleted_at" DATE
+);
+
+create index plans_customizations_gin_index on plans using gin (customizations);
+create index plans_deleted_at_index on plans(deleted_at);
