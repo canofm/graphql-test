@@ -3,7 +3,7 @@ CREATE TYPE role_enum AS ENUM('employee', 'admin');
 CREATE TABLE users(
   "id" UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   "email" VARCHAR NOT NULL UNIQUE,
-  "organization_reference" UUID NOT NULL,
+  "organization_reference" VARCHAR NOT NULL,
   "firstname" VARCHAR NOT NULL,
   "lastname" VARCHAR NOT NULL,
   "avatar" VARCHAR,
@@ -12,7 +12,7 @@ CREATE TABLE users(
   "created_at" DATE NOT NULL DEFAULT NOW(),
   "updated_at" DATE NOT NULL DEFAULT NOW(),
   "deleted_at" DATE,
-  FOREIGN KEY(organization_reference) REFERENCES organizations(id)
+  FOREIGN KEY(organization_reference) REFERENCES organizations(code)
 );
 
 create index users_deleted_at_index on users(deleted_at);
