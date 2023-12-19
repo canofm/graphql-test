@@ -1,4 +1,4 @@
-CREATE TYPE role_enum AS ENUM('employee', 'admin');
+CREATE TYPE role_enum AS ENUM('employee', 'admin', 'global_admin');
 
 CREATE TABLE users(
   "id" UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -16,4 +16,4 @@ CREATE TABLE users(
 );
 
 create index users_deleted_at_index on users(deleted_at);
-create index users_organization_references_index on users(organization_reference);
+create index users_organization_reference_index on users(organization_reference);
