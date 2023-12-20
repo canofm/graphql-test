@@ -1,6 +1,8 @@
+import { snakeCase } from 'lodash';
 import db from '../db';
 import { SupportLevel } from '../resolvers-types.generated';
-import { BillingFrequency, Currency, StorageUnit } from '../types';
+import { BillingFrequency, Currency, Customizations, Plan, PlanField, StorageUnit } from '../types';
+import convertObjectKeysToCamelCase from '../utils/convertObjectKeysToCamelCase';
 
 type CustomizationsDb = {
   advanced_analytics?: boolean | null;
@@ -25,15 +27,24 @@ export type PlanDb = {
   deleted_at: Date | null;
 };
 
-export type PlanFields = keyof PlanDb;
-
-function getPlans(): Promise<PlanDb[]> {
-  return db.from('plans').select();
+function mapPlan(plan: PlanDb): Plan {
+  return {
+    ...convertObjectKeysToCamelCase<Plan>(plan),
+    ...{ customizations: convertObjectKeysToCamelCase<Customizations>(plan.customizations) },
+  };
 }
 
-async function getPlanById(id: string, fields: PlanFields[]): Promise<PlanDb | undefined> {
-  const [firstResult] = await db<PlanDb>('plans').select(fields).where('id', id);
-  return firstResult;
+async function getPlans(): Promise<Plan[]> {
+  const plansDb = await db.from('plans').select();
+  return plansDb.map((plan: PlanDb) => mapPlan(plan));
+}
+
+async function getPlanById(id: string, fields: PlanField[]): Promise<Plan | undefined> {
+  const dbFields = fields.map((field: PlanField) => snakeCase(field));
+  const [firstResult] = (await db<PlanDb>('plans')
+    .select(dbFields)
+    .where('id', id)) as unknown as PlanDb[];
+  return mapPlan(firstResult);
 }
 
 const planRepository = { getPlans, getPlanById };
