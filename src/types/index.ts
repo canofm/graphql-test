@@ -76,24 +76,17 @@ export type Plan = {
   deletedAt: Date | null;
 };
 
-export const PLAN_FIELDS = <const>[
-  'id',
-  'name',
-  'description',
-  'monthlyPrice',
-  'currency',
-  'billingFrequency',
-  'storageAmount',
-  'storageUnit',
-  'supportLevel',
-  'customizations',
-  'annualDiscount',
-  'createdAt',
-  'updatedAt',
-  'deletedAt',
-];
-
 export type PlanField = keyof Plan;
+
+export type OrganizationDb = {
+  id: string;
+  code: string;
+  name: string;
+  country_code: CountryCode;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+};
 
 export type Organization = {
   id: string;
@@ -104,16 +97,6 @@ export type Organization = {
   updatedAt: Date;
   deletedAt: Date | null;
 };
-
-export const ORGANIZATIONS_FIELDS = <const>[
-  'id',
-  'code',
-  'name',
-  'countryCode',
-  'createdAt',
-  'updatedAt',
-  'deletedAt',
-];
 
 export type OrganizationField = keyof Organization;
 

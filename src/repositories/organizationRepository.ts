@@ -1,21 +1,7 @@
 import { snakeCase } from 'lodash';
 import db from '../db';
-import { CountryCode, Organization, OrganizationField } from '../types';
-import convertObjectKeysToCamelCase from '../utils/convertObjectKeysToCamelCase';
-
-type OrganizationDb = {
-  id: string;
-  code: string;
-  name: string;
-  country_code: CountryCode;
-  created_at: Date;
-  updated_at: Date;
-  deleted_at: Date | null;
-};
-
-function mapOrganization(organization: OrganizationDb): Organization {
-  return convertObjectKeysToCamelCase(organization);
-}
+import Organization from '../models/domain/Organization';
+import { OrganizationDb, OrganizationField } from '../types';
 
 async function getOrganizationByCode(
   code: string,
@@ -25,7 +11,7 @@ async function getOrganizationByCode(
   const [firstResult] = (await db<OrganizationDb>('organizations')
     .select(dbFields)
     .where('code', code)) as unknown as OrganizationDb[];
-  return mapOrganization(firstResult);
+  return Organization.fromDb(firstResult);
 }
 
 const organizationRepository = { getOrganizationByCode };
