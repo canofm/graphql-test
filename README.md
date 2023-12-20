@@ -1,5 +1,3 @@
-# graphql-test
-
 ## Cómo levantarlo?
 
 ### Primera vez?
@@ -9,6 +7,7 @@ Diferencio la 1ra vez porque es necesario correr unos scripts para crear la base
 
 Abrir una terminal y seguir estas instrucciones:
 
+- 0 crear `.env` (copiarse de `.env.example`)
 - 1. `docker compose up -d postgres redis`
 - 2. Darle permiso a `./scripts/create_db.sh` : usar: `chmod +x ./scripts/create_db.sh`
 - 3. Correr `./scripts/create_db.sh`
