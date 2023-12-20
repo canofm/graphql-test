@@ -2,6 +2,7 @@ version: '3.8'
 
 volumes:
   postgres-data:
+  redis-data:
 
 services:
   app:
@@ -15,6 +16,7 @@ services:
       - .:/app
     depends_on:
       - postgres
+      - redis
 
   postgres:
     restart: always
@@ -28,3 +30,13 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data:cached
     shm_size: '2gb'
+
+  redis:
+    image: redis:alpine3.16
+    container_name: fede_cache
+    hostname: cache.local
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass admin
+    volumes:
+      - redis-data:/var/lib/redis/data:cached

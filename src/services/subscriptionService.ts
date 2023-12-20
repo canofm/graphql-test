@@ -1,13 +1,14 @@
-import { add } from 'date-fns';
 import Subscription from '../models/domain/Subscription';
 import subscriptionRepository from '../repositories/subscriptionRepository';
-import { BillingFrequency } from '../types';
 
 function getSubscriptions(): Promise<Subscription[]> {
   return subscriptionRepository.getSubscriptions();
 }
 
-function getLastPaymentDate(organizationReference: string, subscriptionId: string): Promise<Date> {
+function getLastPaymentDate(
+  organizationReference: string,
+  subscriptionId: string,
+): Promise<Date | undefined> {
   return subscriptionRepository.getLastPaymentDate(organizationReference, subscriptionId);
 }
 

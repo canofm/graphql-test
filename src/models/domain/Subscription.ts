@@ -37,7 +37,7 @@ class Subscription {
     return sub;
   }
 
-  public async getNextPaymentDate(lastPaymentDate: Date): Promise<Date> {
+  public async getNextPaymentDate(lastPaymentDate?: Date): Promise<Date> {
     const { billingFrequency, startsAt } = this;
     const duration = billingFrequency === BillingFrequency.Annual ? 'years' : 'months';
     // if there is not any payment register, then should use the startsAt date

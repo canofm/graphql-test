@@ -1,3 +1,4 @@
+import { Cache } from '../cache';
 import db from '../db';
 import Subscription from '../models/domain/Subscription';
 import { SubscriptionDb } from '../types';
@@ -10,7 +11,18 @@ async function getSubscriptions(): Promise<Subscription[]> {
 async function getLastPaymentDate(
   organizationReference: string,
   subscriptionId: string,
-): Promise<Date> {
+): Promise<Date | undefined> {
+  const cacheKey = `lastPaymentDate:${subscriptionId}`;
+  try {
+    const lastPaymentDate = await Cache.get<Date>(cacheKey);
+    if (lastPaymentDate) {
+      return new Date(lastPaymentDate);
+    }
+  } catch (error: unknown) {
+    // cache may be disconnected
+    console.error({ error });
+  }
+
   const [lastPayment] = await db
     .from('payments as p')
     .select('p.updated_at')
@@ -26,8 +38,11 @@ async function getLastPaymentDate(
       'p.invoice_reference',
       'r.id',
     );
-
-  return new Date(lastPayment.updated_at);
+  if (lastPayment) {
+    Cache.set(cacheKey, lastPayment.updated_at, 60 * 15); // ttl: 15 mins
+    return new Date(lastPayment.updated_at);
+  }
+  return;
 }
 
 const subscriptionRepository = { getSubscriptions, getLastPaymentDate };

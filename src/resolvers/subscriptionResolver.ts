@@ -33,7 +33,7 @@ const subscriptionResolver = {
       subscription.organizationReference,
       subscription.id,
     );
-    return lastPaymentDate.toISOString();
+    return lastPaymentDate?.toISOString();
   },
   nextPaymentDateAt: async (
     subcription: Subscription,
