@@ -1,5 +1,5 @@
 export enum Currency {
-  USD = 'usd',
+  Usd = 'usd',
   PesoArgentino = 'peso_argentino',
 }
 
@@ -9,8 +9,8 @@ export enum BillingFrequency {
 }
 
 export enum StorageUnit {
-  GB = 'GB',
-  TB = 'TB',
+  Gb = 'GB',
+  Tb = 'TB',
 }
 
 export enum SupportLevel {
@@ -20,15 +20,38 @@ export enum SupportLevel {
 }
 
 export enum CountryCode {
-  ARG = 'arg',
-  BRA = 'bra',
-  CHL = 'chl',
-  COL = 'col',
-  ESP = 'esp',
-  MEX = 'mex',
-  PER = 'per',
-  USA = 'usa',
+  Arg = 'arg',
+  Bra = 'bra',
+  Chl = 'chl',
+  Col = 'col',
+  Esp = 'esp',
+  Mex = 'mex',
+  Per = 'per',
+  Usa = 'usa',
 }
+
+type CustomizationsDb = {
+  advanced_analytics?: boolean | null;
+  analytics_tools?: boolean | null;
+  custom_integrations?: boolean | null;
+};
+
+export type PlanDb = {
+  id: string;
+  name: string;
+  description: string | null;
+  monthly_price: number;
+  currency: Currency;
+  billing_frequency: BillingFrequency;
+  storage_amount: number;
+  storage_unit: StorageUnit;
+  support_level: SupportLevel;
+  customizations: CustomizationsDb;
+  annual_discount: number;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+};
 
 export type Customizations = {
   advancedAnalytics?: boolean | null;
