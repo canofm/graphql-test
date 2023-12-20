@@ -3,14 +3,17 @@ import { ApolloServer, ExpressContext } from 'apollo-server-express';
 import * as express from 'express';
 import fs from 'fs';
 import { GraphQLResolveInfo } from 'graphql';
-import graphqlFields from 'graphql-fields';
 import { Server } from 'http';
-import { pick, snakeCase } from 'lodash';
+import { pick } from 'lodash';
 import path from 'path';
 import Db from '../db';
-import { BillingFrequency, Plan, SubscriptionStatus } from '../resolvers-types.generated';
+import planRepository, { PlanDb, PlanFields, PlanRepository } from '../repositories/planRepository';
+import { SubscriptionStatus } from '../resolvers-types.generated';
+import { BillingFrequency } from '../types';
+import convertObjectKeysToCamelCase from '../utils/convertObjectKeysToCamelCase';
+import { getGraphQLFieldsDb } from '../utils/getGraphQLFieldsDb';
 
-type ContextType = { db: typeof Db };
+type ContextType = { db: typeof Db; planRepository: PlanRepository };
 
 const typeDefs = fs.readFileSync(path.join(__dirname, '../schema.graphql')).toString('utf-8');
 
@@ -26,29 +29,28 @@ type SubscriptionDb = {
 
 const resolvers = {
   Query: {
-    plans: async (_: unknown, __: unknown, { db }: { db: typeof Db }, ___: unknown) => {
-      return db('plans').select();
+    plans: (_: unknown, __: unknown, { planRepository }: ContextType, ___: unknown) => {
+      return planRepository.getPlans();
     },
     subscriptions: async (_: unknown, __: unknown, { db }: ContextType, ___: unknown) => {
       return db('subscriptions').select();
     },
   },
   Plan: {
-    customizations: (plan: Plan, _: unknown, __: ContextType, info: GraphQLResolveInfo) => {
-      const fields = Object.keys(graphqlFields(info));
-      return { ...pick(plan.customizations, fields) };
+    customizations: (plan: PlanDb, _: unknown, __: ContextType, info: GraphQLResolveInfo) => {
+      const fields = getGraphQLFieldsDb<PlanFields>(info);
+      return { ...pick(convertObjectKeysToCamelCase<PlanDb>(plan).customizations, fields) };
     },
   },
   Subscription: {
-    plan: async (
+    plan: (
       subscription: SubscriptionDb,
       _: unknown,
-      { db }: ContextType,
+      { planRepository }: ContextType,
       info: GraphQLResolveInfo,
     ) => {
-      const fields = Object.keys(graphqlFields(info)).map(snakeCase);
-      const [p] = await db('plans').select(fields).where('id', subscription.plan_reference);
-      return p;
+      const fields = getGraphQLFieldsDb<PlanFields>(info);
+      return planRepository.getPlanById(subscription.plan_reference, fields);
     },
     organization: async (
       subscription: SubscriptionDb,
@@ -56,7 +58,7 @@ const resolvers = {
       { db }: ContextType,
       info: GraphQLResolveInfo,
     ) => {
-      const fields = Object.keys(graphqlFields(info)).map(snakeCase);
+      const fields = getGraphQLFieldsDb(info);
       const [p] = await db('organizations')
         .select(fields)
         .where('code', subscription.organization_reference);
@@ -103,8 +105,9 @@ export async function createApolloServer(
   const server = new ApolloServer({
     resolvers,
     typeDefs,
-    context: (): { db: typeof Db } => ({
+    context: (): ContextType => ({
       db,
+      planRepository,
     }),
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
