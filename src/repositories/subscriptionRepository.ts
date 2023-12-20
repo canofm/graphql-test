@@ -7,7 +7,30 @@ async function getSubscriptions(): Promise<Subscription[]> {
   return subscriptionsDb.map((subcription: SubscriptionDb) => Subscription.fromDb(subcription));
 }
 
-const subscriptionRepository = { getSubscriptions };
+async function getLastPaymentDate(
+  organizationReference: string,
+  subscriptionId: string,
+): Promise<Date> {
+  const [lastPayment] = await db
+    .from('payments as p')
+    .select('p.updated_at')
+    .join(
+      db
+        .from('invoices as i')
+        .limit(1)
+        .where('i.organization_reference', organizationReference)
+        .andWhere('i.subscription_reference', subscriptionId)
+        .andWhere('i.status', 'paid')
+        .orderBy('i.updated_at', 'desc')
+        .as('r'),
+      'p.invoice_reference',
+      'r.id',
+    );
+
+  return new Date(lastPayment.updated_at);
+}
+
+const subscriptionRepository = { getSubscriptions, getLastPaymentDate };
 export type SubscriptionRepository = typeof subscriptionRepository;
 
 export default subscriptionRepository;

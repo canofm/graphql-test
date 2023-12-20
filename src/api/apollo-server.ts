@@ -7,7 +7,6 @@ import graphqlFields from 'graphql-fields';
 import { Server } from 'http';
 import { pick } from 'lodash';
 import path from 'path';
-import Db from '../db';
 import Subscription from '../models/domain/Subscription';
 import { Plan } from '../resolvers-types.generated';
 import queryResolver from '../resolvers/queryResolver';
@@ -18,7 +17,6 @@ import { OrganizationField, PlanField } from '../types';
 import { getGraphQLFields } from '../utils/getGraphQLFieldsDb';
 
 type ContextType = {
-  db: typeof Db;
   planService: PlanService;
   organizationService: OrganizationService;
   subscriptionService: SubscriptionService;
@@ -53,32 +51,29 @@ const resolvers = {
       const fields = getGraphQLFields<OrganizationField>(info);
       return organizationService.getOrganizationByCode(subscription.organizationReference, fields);
     },
-    lastPaymentDateAt: async (subscription: Subscription, __: unknown, { db }: ContextType) => {
-      const [r] = await db
-        .from('payments as p')
-        .select('p.updated_at')
-        .join(
-          db
-            .from('invoices as i')
-            .limit(1)
-            .where('i.organization_reference', subscription.organizationReference)
-            .andWhere('i.subscription_reference', subscription.id)
-            .andWhere('i.status', 'paid')
-            .orderBy('i.updated_at', 'desc')
-            .as('r'),
-          'p.invoice_reference',
-          'r.id',
-        );
-      return new Date(r.updated_at).toISOString();
+    lastPaymentDateAt: async (
+      subscription: Subscription,
+      __: unknown,
+      { subscriptionService }: ContextType,
+    ) => {
+      const lastPaymentDate = await subscriptionService.getLastPaymentDate(
+        subscription.organizationReference,
+        subscription.id,
+      );
+      return lastPaymentDate.toISOString();
     },
-    nextPaymentDateAt: () => {
-      return new Date().toISOString();
+    nextPaymentDateAt: async (
+      subcription: Subscription,
+      _: unknown,
+      { subscriptionService }: ContextType,
+    ) => {
+      const nextPaymentDate = await subscriptionService.getNextPaymentDate(subcription);
+      return nextPaymentDate.toISOString();
     },
   },
 };
 
 export async function createApolloServer(
-  db: typeof Db,
   httpServer: Server,
   app: express.Application,
 ): Promise<ApolloServer<ExpressContext>> {
@@ -86,7 +81,6 @@ export async function createApolloServer(
     resolvers,
     typeDefs,
     context: (): ContextType => ({
-      db,
       planService,
       subscriptionService,
       organizationService,

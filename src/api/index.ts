@@ -10,7 +10,7 @@ const app = express();
 
 async function main() {
   const httpServer = createServer(app);
-  const apolloServer = await createApolloServer(db, httpServer, app);
+  const apolloServer = await createApolloServer(httpServer, app);
 
   await new Promise<void>((resolve) =>
     app.listen(PORT, () => {

@@ -1,3 +1,4 @@
+import { add } from 'date-fns';
 import { BillingFrequency, SubscriptionDb, SubscriptionStatus } from '../../types';
 
 class Subscription {
@@ -34,6 +35,14 @@ class Subscription {
     sub.updatedAt = subscription.updated_at.toISOString();
     sub.deletedAt = subscription.deleted_at?.toISOString() ?? null;
     return sub;
+  }
+
+  public async getNextPaymentDate(lastPaymentDate: Date): Promise<Date> {
+    const { billingFrequency, startsAt } = this;
+    const duration = billingFrequency === BillingFrequency.Annual ? 'years' : 'months';
+    // if there is not any payment register, then should use the startsAt date
+    const basePaymentDate = lastPaymentDate ?? new Date(startsAt);
+    return add(basePaymentDate, { [duration]: 1 });
   }
 }
 
