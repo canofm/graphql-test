@@ -19,6 +19,17 @@ export enum SupportLevel {
   Priority = 'priority',
 }
 
+export enum CountryCode {
+  ARG = 'arg',
+  BRA = 'bra',
+  CHL = 'chl',
+  COL = 'col',
+  ESP = 'esp',
+  MEX = 'mex',
+  PER = 'per',
+  USA = 'usa',
+}
+
 export type Customizations = {
   advancedAnalytics?: boolean | null;
   analyticsTools?: boolean | null;
@@ -60,3 +71,25 @@ export const PLAN_FIELDS = <const>[
 ];
 
 export type PlanField = keyof Plan;
+
+export type Organization = {
+  id: string;
+  code: string;
+  name: string;
+  countryCode: CountryCode;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
+};
+
+export const ORGANIZATIONS_FIELDS = <const>[
+  'id',
+  'code',
+  'name',
+  'countryCode',
+  'createdAt',
+  'updatedAt',
+  'deletedAt',
+];
+
+export type OrganizationField = keyof Organization;
