@@ -1,0 +1,81 @@
+enum Currency {
+  usd
+  peso_argentino
+}
+
+enum BillingFrequency {
+  monthly
+  annual
+}
+
+enum StorageUnit {
+  GB
+  TB
+}
+
+enum SupportLevel {
+  basic
+  priority
+  dedicated
+}
+
+type Customizations {
+  analyticsTools: Boolean
+  advancedAnalytics: Boolean
+  customIntegrations: Boolean
+}
+
+type Plan {
+  id: ID!
+  name: String!
+  description: String
+  monthlyPrice: Float!
+  currency: Currency!
+  billingFrequency: BillingFrequency!
+  storageAmount: Int
+  storageUnit: StorageUnit
+  supportLevel: SupportLevel!
+  annualDiscount: Float!
+  customizations: Customizations
+}
+
+enum CountryCode {
+  arg
+  bra
+  chl
+  col
+  per
+  mex
+  esp
+  usa
+}
+
+enum SubscriptionStatus {
+  active
+  paused
+  deactivated
+}
+
+type Organization {
+  id: ID!
+  code: String!
+  name: String!
+  countryCode: CountryCode!
+}
+
+type Subscription {
+  id: ID!
+  organization: Organization!
+  plan: Plan!
+  status: SubscriptionStatus!
+  startsAt: String!
+  endsAt: String
+  billingFrequency: BillingFrequency!
+  lastPaymentDateAt: String
+  nextPaymentDateAt: String
+}
+
+type Query {
+  plans: [Plan]!
+  subscriptions: [Subscription]!
+}
