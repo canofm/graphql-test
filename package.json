@@ -9,7 +9,7 @@
     "start:dev": "npx nodemon",
     "codegen": "yarn graphql-codegen",
     "start": "npm run build && node build/api/index.js",
-    "build": "npm run build-ts",
+    "build": "npm run build-ts && npm run codegen",
     "build-ts": "tsc"
   },
   "dependencies": {
