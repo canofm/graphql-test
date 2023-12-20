@@ -93,3 +93,22 @@ export const ORGANIZATIONS_FIELDS = <const>[
 ];
 
 export type OrganizationField = keyof Organization;
+
+export enum SubscriptionStatus {
+  ACTIVE = 'active',
+  DEACTIVATED = 'deactivated',
+  PAUSED = 'paused',
+}
+
+export type SubscriptionDb = {
+  id: string;
+  organization_reference: string;
+  plan_reference: string;
+  status: SubscriptionStatus;
+  starts_at: Date;
+  ends_at?: Date | null;
+  billing_frequency: BillingFrequency;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at?: Date | null;
+};
