@@ -1,7 +1,7 @@
-import { ContextResolver } from '.';
-import { Plan, QueryResolvers } from '../resolvers-types.generated';
+import { QueryResolvers } from '../resolvers-types.generated';
+import { ContextResolver } from './types';
 
-const queryResolver: QueryResolvers<ContextResolver> = {
+const queryResolver = {
   plans: (_: unknown, __: unknown, { planService }: ContextResolver) => {
     return planService.getPlans();
   },

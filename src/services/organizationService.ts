@@ -1,11 +1,16 @@
+import { pick } from 'lodash';
+import Organization from '../models/domain/Organization';
 import organizationRepository from '../repositories/organizationRepository';
-import { Organization, OrganizationField } from '../types';
 
 async function getOrganizationByCode(
   organizationCode: Organization['code'],
-  fields?: OrganizationField[],
+  fields?: (keyof Organization)[],
 ): Promise<Organization | undefined> {
-  return organizationRepository.getOrganizationByCode(organizationCode, fields ?? []);
+  const organization = await organizationRepository.getOrganizationByCode(organizationCode);
+  if (!organization) {
+    throw new Error(`Organization with code ${organizationCode} not found`);
+  }
+  return fields ? pick(organization, fields) : organization;
 }
 
 const organizationService = {

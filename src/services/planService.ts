@@ -1,12 +1,18 @@
+import { pick } from 'lodash';
+import Plan from '../models/domain/Plan';
 import planRepository from '../repositories/planRepository';
-import { Plan, PlanField } from '../types';
 
+type PlanField = keyof Plan;
 function getPlans(): Promise<Plan[]> {
   return planRepository.getPlans();
 }
 
 async function getPlanById(planId: Plan['id'], fields?: PlanField[]): Promise<Plan | undefined> {
-  return planRepository.getPlanById(planId, fields ?? []);
+  const plan = await planRepository.getPlanById(planId);
+  if (!plan) {
+    throw new Error(`Plan with id ${planId} not found`);
+  }
+  return fields ? pick(plan, fields) : plan;
 }
 
 const planService = {

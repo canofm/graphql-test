@@ -1,12 +1,11 @@
-import {
-  BillingFrequency,
-  Currency,
-  Customizations,
-  PlanDb,
-  StorageUnit,
-  SupportLevel,
-} from '../../types';
+import { BillingFrequency, Currency, PlanDb, StorageUnit, SupportLevel } from '../../types';
 import convertObjectKeysToCamelCase from '../../utils/convertObjectKeysToCamelCase';
+
+type Customizations = {
+  advancedAnalytics?: boolean | null;
+  analyticsTools?: boolean | null;
+  customIntegrations?: boolean | null;
+};
 
 class Plan {
   public id: string;

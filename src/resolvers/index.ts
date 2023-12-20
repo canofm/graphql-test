@@ -1,9 +1,9 @@
-import db from '../db';
-import { PlanService } from '../services/planService';
-import { SubscriptionService } from '../services/subscriptionService';
+import planResolver from './planResolver';
+import queryResolver from './queryResolver';
+import subscriptionResolver from './subscriptionResolver';
 
-export type ContextResolver = {
-  db: typeof db;
-  planService: PlanService;
-  subscriptionService: SubscriptionService;
+export default {
+  Query: queryResolver,
+  Plan: planResolver,
+  Subscription: subscriptionResolver,
 };

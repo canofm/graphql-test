@@ -53,31 +53,6 @@ export type PlanDb = {
   deleted_at: Date | null;
 };
 
-export type Customizations = {
-  advancedAnalytics?: boolean | null;
-  analyticsTools?: boolean | null;
-  customIntegrations?: boolean | null;
-};
-
-export type Plan = {
-  id: string;
-  name: string;
-  description: string | null;
-  monthlyPrice: number;
-  currency: Currency;
-  billingFrequency: BillingFrequency;
-  storageAmount: number;
-  storageUnit: StorageUnit;
-  supportLevel: SupportLevel;
-  customizations: Customizations;
-  annualDiscount: number;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
-};
-
-export type PlanField = keyof Plan;
-
 export type OrganizationDb = {
   id: string;
   code: string;
@@ -87,18 +62,6 @@ export type OrganizationDb = {
   updated_at: Date;
   deleted_at: Date | null;
 };
-
-export type Organization = {
-  id: string;
-  code: string;
-  name: string;
-  countryCode: CountryCode;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
-};
-
-export type OrganizationField = keyof Organization;
 
 export enum SubscriptionStatus {
   ACTIVE = 'active',

@@ -1,15 +1,12 @@
-import { snakeCase } from 'lodash';
 import db from '../db';
 import Organization from '../models/domain/Organization';
-import { OrganizationDb, OrganizationField } from '../types';
+import { OrganizationDb } from '../types';
 
-async function getOrganizationByCode(
-  code: string,
-  fields: OrganizationField[],
-): Promise<Organization | undefined> {
-  const dbFields = fields.map((field: OrganizationField) => snakeCase(field));
+type OrganizationField = keyof Organization;
+
+async function getOrganizationByCode(code: string): Promise<Organization | undefined> {
   const [firstResult] = (await db<OrganizationDb>('organizations')
-    .select(dbFields)
+    .select()
     .where('code', code)) as unknown as OrganizationDb[];
   return Organization.fromDb(firstResult);
 }
