@@ -1,4 +1,4 @@
-CREATE TYPE currency_enum AS ENUM('usd', 'peso argentino');
+CREATE TYPE currency_enum AS ENUM('usd', 'peso_argentino');
 CREATE TYPE billing_frequency_enum AS ENUM('monthly', 'annual');
 CREATE TYPE storage_unit_enum AS ENUM('GB', 'TB');
 CREATE TYPE support_level_enum AS ENUM('basic', 'priority', 'dedicated');
