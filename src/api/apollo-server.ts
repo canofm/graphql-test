@@ -8,14 +8,19 @@ import { Server } from 'http';
 import { pick } from 'lodash';
 import path from 'path';
 import Db from '../db';
+import GetGraphQLOrganizationInput from '../models/inputs/getGraphQLOrganizationInput';
 import GetGraphQLPlanInput from '../models/inputs/getGraphQLPlanInput';
 import { Plan, SubscriptionStatus } from '../resolvers-types.generated';
 import queryResolver from '../resolvers/queryResolver';
+import organizationService, { OrganizationService } from '../services/organizationService';
 import planService, { PlanService } from '../services/planService';
 import { BillingFrequency } from '../types';
-import { getGraphQLFieldsDb } from '../utils/getGraphQLFieldsDb';
 
-type ContextType = { db: typeof Db; planService: PlanService };
+type ContextType = {
+  db: typeof Db;
+  planService: PlanService;
+  organizationService: OrganizationService;
+};
 
 const typeDefs = fs.readFileSync(path.join(__dirname, '../schema.graphql')).toString('utf-8');
 
@@ -50,14 +55,11 @@ const resolvers = {
     organization: async (
       subscription: SubscriptionDb,
       _: unknown,
-      { db }: ContextType,
+      { organizationService }: ContextType,
       info: GraphQLResolveInfo,
     ) => {
-      const fields = getGraphQLFieldsDb(info);
-      const [p] = await db('organizations')
-        .select(fields)
-        .where('code', subscription.organization_reference);
-      return p;
+      const input = new GetGraphQLOrganizationInput(subscription.organization_reference, info);
+      return organizationService.getPlanById(input);
     },
     billingFrequency: (subscription: SubscriptionDb) => {
       return subscription.billing_frequency;
@@ -103,6 +105,7 @@ export async function createApolloServer(
     context: (): ContextType => ({
       db,
       planService,
+      organizationService,
     }),
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
