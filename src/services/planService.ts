@@ -1,14 +1,12 @@
-import GetGraphQLPlanInput from '../models/inputs/getGraphQLPlanInput';
 import planRepository from '../repositories/planRepository';
-import { Plan } from '../types';
+import { Plan, PlanField } from '../types';
 
 function getPlans(): Promise<Plan[]> {
   return planRepository.getPlans();
 }
 
-async function getPlanById(input: GetGraphQLPlanInput): Promise<Plan | undefined> {
-  input.validate();
-  return planRepository.getPlanById(input.planReference, input.fields);
+async function getPlanById(planId: Plan['id'], fields?: PlanField[]): Promise<Plan | undefined> {
+  return planRepository.getPlanById(planId, fields ?? []);
 }
 
 const planService = {

@@ -1,16 +1,15 @@
-import GetGraphQLOrganizationInput from '../models/inputs/getGraphQLOrganizationInput';
 import organizationRepository from '../repositories/organizationRepository';
-import { Organization } from '../types';
+import { Organization, OrganizationField } from '../types';
 
 async function getOrganizationByCode(
-  input: GetGraphQLOrganizationInput,
+  organizationCode: Organization['code'],
+  fields?: OrganizationField[],
 ): Promise<Organization | undefined> {
-  input.validate();
-  return organizationRepository.getOrganizationByCode(input.organizationReference, input.fields);
+  return organizationRepository.getOrganizationByCode(organizationCode, fields ?? []);
 }
 
 const organizationService = {
-  getPlanById: getOrganizationByCode,
+  getOrganizationByCode,
 };
 
 export type OrganizationService = typeof organizationService;

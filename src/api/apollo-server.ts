@@ -8,31 +8,23 @@ import { Server } from 'http';
 import { pick } from 'lodash';
 import path from 'path';
 import Db from '../db';
-import GetGraphQLOrganizationInput from '../models/inputs/getGraphQLOrganizationInput';
-import GetGraphQLPlanInput from '../models/inputs/getGraphQLPlanInput';
-import { Plan, SubscriptionStatus } from '../resolvers-types.generated';
+import Subscription from '../models/domain/Subscription';
+import { Plan } from '../resolvers-types.generated';
 import queryResolver from '../resolvers/queryResolver';
 import organizationService, { OrganizationService } from '../services/organizationService';
 import planService, { PlanService } from '../services/planService';
-import { BillingFrequency } from '../types';
+import subscriptionService, { SubscriptionService } from '../services/subscriptionService';
+import { OrganizationField, PlanField } from '../types';
+import { getGraphQLFields } from '../utils/getGraphQLFieldsDb';
 
 type ContextType = {
   db: typeof Db;
   planService: PlanService;
   organizationService: OrganizationService;
+  subscriptionService: SubscriptionService;
 };
 
 const typeDefs = fs.readFileSync(path.join(__dirname, '../schema.graphql')).toString('utf-8');
-
-type SubscriptionDb = {
-  id: string;
-  organization_reference: string;
-  plan_reference: string;
-  status: SubscriptionStatus;
-  starts_at: Date;
-  ends_at?: Date | null;
-  billing_frequency: BillingFrequency;
-};
 
 const resolvers = {
   Query: queryResolver,
@@ -43,34 +35,25 @@ const resolvers = {
     },
   },
   Subscription: {
-    plan: (
-      subscription: SubscriptionDb,
+    plan: async (
+      subscription: Subscription,
       _: unknown,
       { planService }: ContextType,
       info: GraphQLResolveInfo,
     ) => {
-      const input = new GetGraphQLPlanInput(subscription.plan_reference, info);
-      return planService.getPlanById(input);
+      const fields = getGraphQLFields<PlanField>(info);
+      return planService.getPlanById(subscription.planReference, fields);
     },
     organization: async (
-      subscription: SubscriptionDb,
+      subscription: Subscription,
       _: unknown,
       { organizationService }: ContextType,
       info: GraphQLResolveInfo,
     ) => {
-      const input = new GetGraphQLOrganizationInput(subscription.organization_reference, info);
-      return organizationService.getPlanById(input);
+      const fields = getGraphQLFields<OrganizationField>(info);
+      return organizationService.getOrganizationByCode(subscription.organizationReference, fields);
     },
-    billingFrequency: (subscription: SubscriptionDb) => {
-      return subscription.billing_frequency;
-    },
-    startsAt: (subscription: SubscriptionDb) => {
-      return new Date(subscription.starts_at).toISOString();
-    },
-    endsAt: (subscription: SubscriptionDb) => {
-      return subscription.ends_at ? new Date(subscription.ends_at).toISOString() : null;
-    },
-    lastPaymentDateAt: async (subscription: SubscriptionDb, __: unknown, { db }: ContextType) => {
+    lastPaymentDateAt: async (subscription: Subscription, __: unknown, { db }: ContextType) => {
       const [r] = await db
         .from('payments as p')
         .select('p.updated_at')
@@ -78,7 +61,7 @@ const resolvers = {
           db
             .from('invoices as i')
             .limit(1)
-            .where('i.organization_reference', subscription.organization_reference)
+            .where('i.organization_reference', subscription.organizationReference)
             .andWhere('i.subscription_reference', subscription.id)
             .andWhere('i.status', 'paid')
             .orderBy('i.updated_at', 'desc')
@@ -105,6 +88,7 @@ export async function createApolloServer(
     context: (): ContextType => ({
       db,
       planService,
+      subscriptionService,
       organizationService,
     }),
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],

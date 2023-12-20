@@ -6,8 +6,8 @@ const queryResolver: QueryResolvers<ContextResolver> = {
     return planService.getPlans() as unknown as Promise<Plan[]>; // TODO: Revisar
     // mapToResolver()
   },
-  subscriptions: (_: unknown, __: unknown, { db }: ContextResolver) => {
-    return db('subscriptions').select();
+  subscriptions: (_: unknown, __: unknown, { subscriptionService }: ContextResolver) => {
+    return subscriptionService.getSubscriptions();
   },
 };
 
