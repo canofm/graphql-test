@@ -1,4 +1,5 @@
-import { CountryCode, OrganizationDb } from '../../types';
+import { CountryCode } from '../../resolvers-types.generated';
+import { OrganizationDb } from '../../types';
 
 class Organization {
   public id: string;

@@ -1,5 +1,6 @@
 import { add } from 'date-fns';
-import { BillingFrequency, SubscriptionDb, SubscriptionStatus } from '../../types';
+import { BillingFrequency } from '../../resolvers-types.generated';
+import { SubscriptionDb, SubscriptionStatus } from '../../types';
 
 class Subscription {
   public id: string;

@@ -1,34 +1,10 @@
-export enum Currency {
-  Usd = 'usd',
-  PesoArgentino = 'peso_argentino',
-}
-
-export enum BillingFrequency {
-  Annual = 'annual',
-  Monthly = 'monthly',
-}
-
-export enum StorageUnit {
-  Gb = 'GB',
-  Tb = 'TB',
-}
-
-export enum SupportLevel {
-  Basic = 'basic',
-  Dedicated = 'dedicated',
-  Priority = 'priority',
-}
-
-export enum CountryCode {
-  Arg = 'arg',
-  Bra = 'bra',
-  Chl = 'chl',
-  Col = 'col',
-  Esp = 'esp',
-  Mex = 'mex',
-  Per = 'per',
-  Usa = 'usa',
-}
+import {
+  BillingFrequency,
+  CountryCode,
+  Currency,
+  StorageUnit,
+  SupportLevel,
+} from '../resolvers-types.generated';
 
 type CustomizationsDb = {
   advanced_analytics?: boolean | null;

@@ -1,4 +1,10 @@
-import { BillingFrequency, Currency, PlanDb, StorageUnit, SupportLevel } from '../../types';
+import {
+  BillingFrequency,
+  Currency,
+  StorageUnit,
+  SupportLevel,
+} from '../../resolvers-types.generated';
+import { PlanDb } from '../../types';
 import convertObjectKeysToCamelCase from '../../utils/convertObjectKeysToCamelCase';
 
 type Customizations = {
