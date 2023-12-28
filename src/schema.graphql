@@ -56,11 +56,81 @@ enum SubscriptionStatus {
   deactivated
 }
 
+enum InvoiceStatus {
+  draft
+  open
+  paid
+  canceled
+  uncollectible
+}
+
+enum Role {
+  employee
+  admin
+  globalAdmin
+}
+
+enum PaymentStatus {
+  pending
+  processing
+  approved
+  rejected
+}
+
+enum PaymentMethod {
+  creditCard
+  debitCard
+  bankTransfer
+}
+
 type Organization {
   id: ID!
   code: String!
   name: String!
   countryCode: CountryCode!
+}
+
+type User {
+  id: ID!
+  organization: Organization!
+  email: String!
+  firstname: String!
+  lastname: String!
+  avatar: String
+  role: Role!
+  createdAt: String!
+  updatedAt: String!
+  deletedAt: String
+}
+
+type Invoice {
+  id: ID!
+  organization: Organization!
+  status: InvoiceStatus!
+  amount: Float!
+  currency: Currency!
+  dueDateAt: String!
+  billingAddress: String
+  billingZipCode: String
+  billingCountryCode: CountryCode
+  billingFullName: String
+  updatedBy: User!
+  createdAt: String!
+  updatedAt: String!
+  deletedAt: String
+}
+
+type Payment {
+  id: ID!
+  organization: Organization!
+  invoice: Invoice!
+  status: PaymentStatus!
+  amount: Float!
+  currency: Currency
+  paymentMethod: PaymentMethod!
+  createdAt: String!
+  updatedAt: String!
+  deletedAt: String
 }
 
 type Subscription {
@@ -73,6 +143,7 @@ type Subscription {
   billingFrequency: BillingFrequency!
   lastPaymentDateAt: String
   nextPaymentDateAt: String
+  invoices: [Invoice]
 }
 
 type Query {

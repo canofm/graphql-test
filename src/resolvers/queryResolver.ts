@@ -1,4 +1,3 @@
-import { QueryResolvers } from '../resolvers-types.generated';
 import { ContextResolver } from './types';
 
 const queryResolver = {

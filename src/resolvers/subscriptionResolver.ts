@@ -1,4 +1,5 @@
 import { GraphQLResolveInfo } from 'graphql';
+import Invoice from '../models/domain/Invoice';
 import Organization from '../models/domain/Organization';
 import Plan from '../models/domain/Plan';
 import Subscription from '../models/domain/Subscription';
@@ -42,6 +43,15 @@ const subscriptionResolver = {
   ) => {
     const nextPaymentDate = await subscriptionService.getNextPaymentDate(subcription);
     return nextPaymentDate.toISOString();
+  },
+  invoices: async (
+    subscription: Subscription,
+    _: unknown,
+    { subscriptionService }: ContextResolver,
+    info: GraphQLResolveInfo,
+  ) => {
+    const fields = getGraphQLFields<keyof Invoice>(info);
+    return subscriptionService.getInvoices(subscription.id, fields);
   },
 };
 

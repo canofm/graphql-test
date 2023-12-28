@@ -1,4 +1,7 @@
+import { pick } from 'lodash';
+import Invoice from '../models/domain/Invoice';
 import Subscription from '../models/domain/Subscription';
+import invoiceRepository from '../repositories/invoiceRepository';
 import subscriptionRepository from '../repositories/subscriptionRepository';
 
 function getSubscriptions(): Promise<Subscription[]> {
@@ -18,7 +21,17 @@ async function getNextPaymentDate(subscription: Subscription): Promise<Date> {
   return subscription.getNextPaymentDate(lastPayment);
 }
 
-const subscriptionService = { getSubscriptions, getLastPaymentDate, getNextPaymentDate };
+async function getInvoices(subscriptionId: string, fields?: (keyof Invoice)[]): Promise<Invoice[]> {
+  const invoices = await invoiceRepository.getInvoicesFromSubscription(subscriptionId);
+  return fields ? invoices.map((invoice) => pick(invoice, fields)) : invoices;
+}
+
+const subscriptionService = {
+  getSubscriptions,
+  getLastPaymentDate,
+  getNextPaymentDate,
+  getInvoices,
+};
 
 export type SubscriptionService = typeof subscriptionService;
 

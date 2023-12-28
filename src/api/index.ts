@@ -23,7 +23,7 @@ async function main() {
 
   await new Promise<void>((resolve) =>
     app.listen(PORT, () => {
-      console.log(`App listening on port: ${PORT}/${apolloServer.graphqlPath}`);
+      console.log(`App listening on http://localhost:${PORT}${apolloServer.graphqlPath}`);
       resolve();
     }),
   );
