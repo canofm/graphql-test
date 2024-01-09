@@ -8,6 +8,7 @@ const {
   DB_HOST: dbHost,
 } = process.env;
 
+// knex connection
 export default knex({
   client: 'pg',
   connection: {
